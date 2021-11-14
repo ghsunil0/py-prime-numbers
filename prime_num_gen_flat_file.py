@@ -27,12 +27,20 @@ Modification History
         #                   created manually
         #              Added count down display
         #  11/11/2021  Included os path To reduce the changes from linux to windows
-        #              Changed to accept prime_count in 100 [1-50] (between 100 and 50,000)
+        #              Changed to accept prime_count in 100 [1-1000] (between 100 and 100,000)
+        #  11/12/2021  Added Displaying total numbers generated at end
+        #  11/14/2021  Logic changed to write store the 100 prime numbers in the array and
+        #              for every 100 prime numbers found write the array to all_prime number file
+        #              TODO : This logic will only work and is tested with 1st 100 prime numbers
+        #                     already generated. The logic for 1st 1000 prime numbers need to be
+        #                     coded and tested.
+        #              Added logic to print time taken for every 100 records along with other details
+        #
 '''
 
 # import math
 import time
-from sys import exit
+import datetime
 
 # os_path= "./data_files/"    # This is for unix env
 os_path = "f:/prime_numbers/"
@@ -46,8 +54,8 @@ l_pr_num.close()
 default_start_pr_chk_fr=start_pr_chk_fr
 first_prime_number=default_start_pr_chk_fr
 
-print ("Last Generated Count        = {:,}".format(start_pr_count ))
-print ("Last Generated Prime Number = {:,}".format(start_pr_chk_fr))
+print ("Last Generated Count        = {:12,}".format(start_pr_count ))
+print ("Last Generated Prime Number = {:12,}".format(start_pr_chk_fr))
 
 #  2021 1110  : Removed the input and taking it from last run
 #  start_pr_chk_fr = input("What number you want to start for prime numbers  : ") or default_start_pr_chk_fr
@@ -64,7 +72,8 @@ last_pr_num_file_name = os_path + "last_prime_num.txt"
 pr_num_out_file_name  = os_path + "prime_num_" + '{:06d}'.format(out_file_num) +".txt"
 print ("generated file name = {} ".format(pr_num_out_file_name))
 # pr_num_out_file=open(pr_num_out_file_name, mode="a", encoding="utf-8")
-start_time=time.asctime( time.localtime(time.time()) )
+# start_time=time.asctime( time.localtime(time.time()) )
+start_time  = datetime.datetime.now()
 
 # pr_num_file = "./data_files/all_prime_numbers.txt"
 pr_num_file = os_path + "all_prime_numbers.txt"
@@ -117,27 +126,28 @@ if nrem == 0:
 prime_count = 0
 # prime_count = input("How Many Prime Numbers do you want : ")
 # prime_count = int(prime_count)
-#              Changed to accept prime_count in 100 [1-50] (between 100 and 50,000)
+#              Changed to accept prime_count in 100 [1-1000] (between 100 and 100,000)
 while True:
-    prime_count = input("How Many Prime Numbers do you want (1-50) x 100 : ")
+    prime_count = input("How Many Prime Numbers do you want (1-1001) x 100 : ")
     prime_count = int(prime_count)
-    if prime_count > 0 and prime_count < 50:
+    if prime_count > 0 and prime_count < 1001:
        break
 
 prime_count = prime_count * 100
-print  ("Total Prime Numbers to Generate {:,} : ".format(prime_count))
-
-
-
-
-
+print  ("Total Prime Numbers to Generate  :  {:,} ".format(prime_count))
 end_pr_count  = current_pr_count + prime_count -1
 pr_count_down = prime_count
 
-start_time=time.asctime( time.localtime(time.time()) )
+start_time=datetime.datetime.now()
 
 print ("Local Start time :", start_time)
 
+total_pr_generated = 0
+
+
+pr_num_array=[]
+
+st_100_time=datetime.datetime.now()
 
 while current_pr_count <= end_pr_count:
 # while True:
@@ -159,24 +169,41 @@ while current_pr_count <= end_pr_count:
         if (m == '') or (chk_m > chk_num/2) :
 # 11/15/2021  End
 #            finished checking against all the previous prime numbers
-            end_time = time.asctime(time.localtime(time.time()))
+            end_time = datetime.datetime.now()
 #            print(f"Prime Number {x} is {chk_num} Time : {end_time}")
 #            wr_str = "Prime Number " + str(x) + " is " + str(chk_num) + " Time : " + end_time
 #            pr_num_out_file.write(wr_str + "\n")
 
             is_prime = False
-            pr_nums.close()
-            pr_nums=open(pr_num_file, mode="a")
-            pr_nums.write(str(chk_num) + "\n")
-            pr_nums.close()
-            pr_nums=open(pr_num_file, mode="r")
+#            pr_nums.close()
+#            pr_nums=open(pr_num_file, mode="a")
+#            pr_nums.write(str(chk_num) + "\n")
+#            pr_nums.close()
+#            pr_nums=open(pr_num_file, mode="r")
+            pr_num_array.insert(-1,chk_num)
             last_prime_num=chk_num
+            total_pr_generated += 1
+
             current_pr_count += 1
             pr_count_down    -= 1
             if int(current_pr_count / 100) == current_pr_count / 100:  # print time every 100 numbers
-               end_time = time.asctime(time.localtime(time.time()))
-               print("Prime Number {:,} is {:,} Time : {} {:,}".format(current_pr_count,chk_num,end_time,pr_count_down))
-               wr_str = "Prime Number " + str(current_pr_count) + " is " + str(chk_num) + " Time : " + end_time
+               pr_nums.close()
+               pr_nums=open(pr_num_file, mode="a")
+               for ins_pr_num in pr_num_array:
+                    pr_nums.write(str(ins_pr_num) + "\n")
+               pr_nums.close()
+               pr_nums=open(pr_num_file, mode="r")
+               pr_num_array=[]
+
+               end_time    = datetime.datetime.now()
+               en_100_time = datetime.datetime.now()
+               time_for_100 = en_100_time - st_100_time
+               st_100_time = datetime.datetime.now()
+
+               #                print("Prime Number {:,} is {:,} Time : {} {:,}".format(current_pr_count,chk_num,end_time,pr_count_down))
+#               wr_str = "Prime Number " + str(current_pr_count) + " is " + str(chk_num) + " Time : " + end_time
+               wr_str = ("Prime Number {:,} is {:,} Time : {} {:,}  {} ".format(current_pr_count,chk_num,end_time,pr_count_down, time_for_100))
+               print (wr_str)
                pr_num_out_file.write(wr_str + "\n")
                pr_num_out_file.close()
                pr_num_out_file = open(pr_num_out_file_name, mode="a", encoding="utf-8")
@@ -190,7 +217,6 @@ while current_pr_count <= end_pr_count:
                   pr_num_out_file.close()
 
                   out_file_num = out_file_num_new
-#                  pr_num_out_file_name = "./data_files/prime_num_" + '{:06d}'.format(out_file_num) + ".txt"
                   pr_num_out_file_name = os_path + "prime_num_" + '{:06d}'.format(out_file_num) + ".txt"
                   pr_num_out_file = open(pr_num_out_file_name, mode="w", encoding="utf-8")
                   wr_str = "Start Time : " + end_time
@@ -210,18 +236,19 @@ while current_pr_count <= end_pr_count:
            is_prime = False
            break
 
-end_time = time.asctime( time.localtime(time.time()) )
+end_time = datetime.datetime.now()
 
 l_pr_num = open(last_pr_num_file_name, mode="w")
 l_pr_num.write(str(current_pr_count) + "\n")
 l_pr_num.write(str(last_prime_num)   + "\n")
 l_pr_num.close()
 
-print ("Finding prime_number completed")
-# print ("Local Start Time   : {start_time}")
+seconds_elapsed = end_time - start_time
+print ('='*25)
 print ("Local Start Time   : {}".format(start_time))
-print ("First prime_number : {:,}".format(first_prime_number))
-print ("Last  prime_number : {:,}".format(last_prime_num))
-# print ("Last  prime_number : {last_prime_num} ")
-print (f"Local End   Time  : {end_time}")
-
+print ("Local End   Time   : {}".format(end_time))
+print ("Elapsed Time       : {}".format(seconds_elapsed))
+print ("First prime_number : {:12,}".format(first_prime_number))
+print ("Last  prime_number : {:12,}".format(last_prime_num))
+print ("Last  Total Gen #  : {:12,}".format(total_pr_generated))
+print ('='*25)
