@@ -16,5 +16,15 @@ Process : Will find the n prime numbers
     at end 
           will write the last prime number to a parameter file (input for the new run) 
           display start time, end time, start prime number and end prime number
+          
+The new version : Genetate prime numbers based on 6k+-1 
+
+      Drastic improvement over the previous version 
+        Previous method generated 100 prime numbers in 50 seconds the 
+        new method generates 10000 prime numbers in 9 seconds 
+        still maintaining the statistics file and all prime numbers file that is 
+        referenced by previous program. 
+        
+       
 
                  
